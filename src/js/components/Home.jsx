@@ -21,37 +21,56 @@ const Home = () => {
         setTasks(newTasks);
     };
 
-    return (
-        <div className="container">
-            <h1>To - do List</h1>
-            <div className="input-group mb-3">
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="What needs to be done?"
-                    value={newTask}
-                    onChange={handleInputChange}
-                    onKeyDown={addTask}
-                />
+     return (
+        <>
+            <header className="header-coquette">
+                <img src="src/img/ICONO-Photoroom.png" alt="Coquette Logo" className="logo-icon" />
+                <h1>My <span className="text-blue">Tasks</span></h1>
+            </header>
+
+            <div className="container coquette-container">
+                <div className="todo-card">
+                    <div className="input-group mb-3">
+                        <input
+                            type="text"
+                            className="form-control input-coquette"
+                            placeholder="Añade una nueva tarea..."
+                            value={newTask}
+                            onChange={handleInputChange}
+                            onKeyDown={addTask}
+                        />
+                    </div>
+
+                    <ul className="list-group list-coquette">
+                        {tasks.length === 0 ? (
+                            <li className="list-group-item empty-state">
+                                <div className="empty-emoji">🎀</div>
+                                <p>No hay tareas, añadir tareas</p>
+                            </li>
+                        ) : (
+                            tasks.map((task, index) => (
+                                <li
+                                    key={index}
+                                    className={`list-group-item task-item ${task.done ? "task-completed" : ""}`}
+                                >
+                                    <span className="task-text">{task.text}</span>
+                                    <button
+                                        className="btn-delete"
+                                        onClick={() => deleteTask(index)}
+                                    >
+                                        ✕
+                                    </button>
+                                </li>
+                            ))
+                        )}
+                    </ul>
+
+                    <div className="mt-3 task-counter">
+                        <p>{tasks.length} item{tasks.length !== 1 ? "s" : ""} left</p>
+                    </div>
+                </div>
             </div>
-            <ul className="list-group">
-                {tasks.length === 0 ? (
-                    <li className="list-group-item text-center">No tasks, add a task</li>
-                ) : (
-                    tasks.map((task, index) => (
-                        <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                            {task.text}
-                            <button className="btn btn-danger" onClick={() => deleteTask(index)}>
-                                X
-                            </button>
-                        </li>
-                    ))
-                )}
-            </ul>
-            <div className="mt-3">
-                <p>{tasks.length} item{tasks.length !== 1 && "s"} left</p>
-            </div>
-        </div>
+        </>
     );
 };
 
