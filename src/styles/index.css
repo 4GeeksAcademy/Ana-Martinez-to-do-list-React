@@ -221,3 +221,27 @@ h1 {
     padding: 1.5rem;
   }
 }
+.btn-clean-all {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 2rem;
+  background: linear-gradient(135deg, var(--coquette-lavender), var(--coquette-bg));
+  color: var(--coquette-dark);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(230, 230, 250, 0.3);
+}
+
+.btn-clean-all:hover {
+  box-shadow: 0 6px 16px rgba(230, 230, 250, 0.5);
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--coquette-blue), var(--coquette-lavender));
+}
+
+.btn-clean-all:active {
+  transform: translateY(0);
+}

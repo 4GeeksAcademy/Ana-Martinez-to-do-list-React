@@ -1,77 +1,77 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { todoApi } from "../services/todoApi";
+import Header from "./Header";
+import TaskInput from "./TaskInput";
+import TaskList from "./TaskList";
+import TaskCounter from "./TaskCounter";
+
+const USERNAME = "ana_martinez";
 
 const Home = () => {
-    const [tasks, setTasks] = useState([]);
-    const [newTask, setNewTask] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [newTask, setNewTask] = useState("");
 
-    const handleInputChange = (event) => {
-        setNewTask(event.target.value);
+  // Cargar tareas al iniciar
+  useEffect(() => {
+    const initializeTasks = async () => {
+      const loadedTasks = await todoApi.loadTasks(USERNAME);
+      setTasks(loadedTasks);
     };
+    initializeTasks();
+  }, []);
 
-    const addTask = (event) => {
-        if (event.key === "Enter" && newTask.trim() !== "") {
-            setTasks([...tasks, { text: newTask, done: false }]);
-            setNewTask("");
-        }
-    };
+  const handleInputChange = (event) => {
+    setNewTask(event.target.value);
+  };
 
-    const deleteTask = (index) => {
-        const newTasks = [...tasks];
-        newTasks.splice(index, 1);
-        setTasks(newTasks);
-    };
+  const handleAddTask = async (event) => {
+    if (event.key === "Enter" && newTask.trim() !== "") {
+      const success = await todoApi.addTask(USERNAME, newTask.trim());
+      if (success) {
+        const updatedTasks = await todoApi.loadTasks(USERNAME);
+        setTasks(updatedTasks);
+        setNewTask("");
+      }
+    }
+  };
 
-     return (
-        <>
-            <header className="header-coquette">
-                <img src="src/img/ICONO-Photoroom.png" alt="Coquette Logo" className="logo-icon" />
-                <h1>My <span className="text-blue">Tasks</span></h1>
-            </header>
+  const handleDeleteTask = async (taskId) => {
+    const success = await todoApi.deleteTask(taskId);
+    if (success) {
+      const updatedTasks = await todoApi.loadTasks(USERNAME);
+      setTasks(updatedTasks);
+    }
+  };
 
-            <div className="container coquette-container">
-                <div className="todo-card">
-                    <div className="input-group mb-3">
-                        <input
-                            type="text"
-                            className="form-control input-coquette"
-                            placeholder="Añade una nueva tarea..."
-                            value={newTask}
-                            onChange={handleInputChange}
-                            onKeyDown={addTask}
-                        />
-                    </div>
+  const handleDeleteAllTasks = async () => {
+    const success = await todoApi.deleteAllTasks(tasks);
+    if (success) {
+      setTasks([]);
+    }
+  };
 
-                    <ul className="list-group list-coquette">
-                        {tasks.length === 0 ? (
-                            <li className="list-group-item empty-state">
-                                <div className="empty-emoji">🎀</div>
-                                <p>No hay tareas, añadir tareas</p>
-                            </li>
-                        ) : (
-                            tasks.map((task, index) => (
-                                <li
-                                    key={index}
-                                    className={`list-group-item task-item ${task.done ? "task-completed" : ""}`}
-                                >
-                                    <span className="task-text">{task.text}</span>
-                                    <button
-                                        className="btn-delete"
-                                        onClick={() => deleteTask(index)}
-                                    >
-                                        ✕
-                                    </button>
-                                </li>
-                            ))
-                        )}
-                    </ul>
-
-                    <div className="mt-3 task-counter">
-                        <p>{tasks.length} item{tasks.length !== 1 ? "s" : ""} left</p>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+  return (
+    <>
+      <Header />
+      <div className="container coquette-container">
+        <div className="todo-card">
+          <TaskInput 
+            newTask={newTask}
+            onInputChange={handleInputChange}
+            onAddTask={handleAddTask}
+          />
+          <TaskList 
+            tasks={tasks}
+            onDeleteTask={handleDeleteTask}
+          />
+          <TaskCounter 
+            taskCount={tasks.length}
+            onDeleteAll={handleDeleteAllTasks}
+          />
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Home;
